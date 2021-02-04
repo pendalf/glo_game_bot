@@ -25,12 +25,20 @@ const numPromt = (correct, incorrect, repeat = false, defValue = '') => {
     return +num;
 };
 
+// Функция запроса у пользователя соглашения на дальнейшие действия
+const userConfirm = function(text) {
+    return confirm(text);
+};
+
 const gameStart = function() {
 
     const min = 1; // Минимальное число для гнерации случайного числа
     const max = 100; // Максимальное число для гнерации случайного числа
-    const correct = `Угадайте число от ${min} до ${max}`;
-    const incorrect = `Введите число от ${min} до ${max}`;
+    const correct = `Угадайте число от ${min} до ${max}`; // Фраза для первой попытки ввода
+    const incorrect = `Введите число от ${min} до ${max}`; // Фраза для НЕ первой попытки ввода
+    const gameMore = 'Поздравляю, Вы угадали!!! Хотели бы сыграть еще?'; // Фраза для оповещения, что пользователь угадал число
+    const attemptsEnded = 'Попытки закончились, хотите сыграть еще?'; // Фраза оповещения при окончании попыток
+    let attempts = 10; // Количество попыток
 
     // Загадывание случайного числа от 1 до 100
     const numRandom = getRandomInt(min, max);
@@ -40,19 +48,27 @@ const gameStart = function() {
 
         let numAns = numPromt(correct, incorrect);
 
+        attempts--;
+
         if (numAns === null) {
             alert('Игра окончена');
             return;
+        } else if (attempts < 1) {
+            if (userConfirm(attemptsEnded)) {
+                gameStart();
+            }
         } else if (numAns < min || numAns > max) {
             gameBot(correct, incorrect);
         } else if (numAns > numRandom) {
-            correct = `Загаданное число меньше. Угадайте число от ${min} до ${max}`;
+            correct = `Загаданное число меньше. Угадайте число от ${min} до ${max}. Осталось попыток ${attempts}`;
             gameBot(correct, incorrect);
         } else if (numAns < numRandom) {
-            correct = `Загаданное число больше. Угадайте число от ${min} до ${max}`;
+            correct = `Загаданное число больше. Угадайте число от ${min} до ${max}. Осталось попыток ${attempts}`;
             gameBot(correct, incorrect);
         } else {
-            alert('Поздравляю, Вы угадали!!!');
+            if (userConfirm(gameMore)) {
+                gameStart();
+            }
         }
     };
 
